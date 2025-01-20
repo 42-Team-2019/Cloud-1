@@ -1,31 +1,30 @@
-version: '3.9'
-
 networks:
-  transcendence:
+  cloud1:
     driver: bridge
     name: cloud1
 
 services:
-# # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#                    MARIADB                          #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # #
- database:
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  #                    MARIADB                          #
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  database:
     networks:
       - cloud1
     build: srcs/db/mariadb
     container_name: mariadb
     image: mariadb
     volumes:
-    - "db/mariadb/:/var/lib/mysql"
+      - "./src/db/mariadb/:/var/lib/mysql"
     restart: always
-# # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#                   WORDPRESS                         #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # #
- site:
+
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  #                   WORDPRESS                         #
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  wordpress:
     depends_on:
       - database
     networks:
-    - cloud1
+      - cloud1
     container_name: wordpress
     build: srcs/sites/wp/
     image: wordpress
@@ -33,20 +32,19 @@ services:
       - "./srcs/site/wp/:/wp/"
     restart: always
 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # #
-#                     NGNINX                          #
-# # # # # # # # # # # # # # # # # # # # # # # # # # # #
-    nginx:
-        depends_on:
-          - wordpress
-        networks:
-          - cloud1
-        container_name: nginx
-        build: srcs/proxy/nginx/
-        image: nginx
-        ports:
-          # - "80:80"
-          - "443:443"
-        volumes:
-          - srcs/sites/wp:/var/www/html
-        restart: always
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  #                     NGINX                           #
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  nginx:
+    depends_on:
+      - wordpress
+    networks:
+      - cloud1
+    container_name: nginx
+    build: srcs/proxy/nginx/
+    image: nginx
+    ports:
+      - "443:443"
+    volumes:
+      - ./srcs/sites/wp:/var/www/html
+    restart: always
