@@ -21,6 +21,7 @@ services:
     volumes:
       - "./srcs/db/mariadb/:/var/lib/mysql"
 
+
   # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   #                   WORDPRESS                         #
   # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -30,16 +31,16 @@ services:
     networks:
       - cloud1
     container_name: wordpress
+    build: srcs/sites/wp/
     image: wordpress
     volumes:
-      - "./srcs/sites/wp/:/wp/"
+      - "./srcs/site/wp/:/wp/"
     restart: always
 
-  # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-  # #                     NGINX                           #
-  # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-
-  nginx:
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  #                     NGINX                           #
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+nginx:
     image: nginx:latest
     container_name: my-nginx
     restart: always
