@@ -10,11 +10,12 @@ services:
   database:
     networks:
       - cloud1
-    build: srcs/db/mariadb
     container_name: mariadb
     image: mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
     volumes:
-      - "./src/db/mariadb/:/var/lib/mysql"
+      - "./srcs/db/mariadb/:/var/lib/mysql"
     restart: always
 
   # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -26,10 +27,9 @@ services:
     networks:
       - cloud1
     container_name: wordpress
-    build: srcs/sites/wp/
     image: wordpress
     volumes:
-      - "./srcs/site/wp/:/wp/"
+      - "./srcs/sites/wp/:/wp/"
     restart: always
 
   # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -41,7 +41,6 @@ services:
     networks:
       - cloud1
     container_name: nginx
-    build: srcs/proxy/nginx/
     image: nginx
     ports:
       - "443:443"
