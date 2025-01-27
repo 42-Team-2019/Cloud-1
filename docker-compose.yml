@@ -21,7 +21,6 @@ services:
     volumes:
       - "./srcs/db/mariadb/:/var/lib/mysql"
 
-
   # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   #                   WORDPRESS                         #
   # # # # # # # # # # # # # # # # # # # # # # # # # # # #
