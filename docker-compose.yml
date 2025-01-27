@@ -10,13 +10,16 @@ services:
   database:
     networks:
       - cloud1
+    image: mariadb:latest
     container_name: mariadb
-    image: mariadb
+    restart: always
     environment:
       MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+    expose:
+      - 3306
     volumes:
       - "./srcs/db/mariadb/:/var/lib/mysql"
-    restart: always
 
   # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   #                   WORDPRESS                         #
@@ -32,9 +35,9 @@ services:
       - "./srcs/sites/wp/:/wp/"
     restart: always
 
-  # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-  #                     NGINX                           #
-  # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  # #                     NGINX                           #
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   nginx:
     depends_on:
       - wordpress
