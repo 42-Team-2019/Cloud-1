@@ -1,0 +1,41 @@
+events {}
+
+http {
+    # Inclure les types MIME pour le serveur
+    include /etc/nginx/mime.types;
+
+    # Autres paramètres généraux
+    server_tokens off;  # Désactiver la diffusion des informations sur la version de Nginx
+
+    # Configuration HTTPS
+    server {
+        listen 443 ssl;
+        server_name ${DOMAIN_NAME};  # Utilisation de la variable d'environnement DOMAIN_NAME
+
+        # Configuration des certificats SSL
+        ssl_certificate ${SSL_CERT_PATH};  # Utilisation de la variable SSL_CERT_PATH
+        ssl_certificate_key ${SSL_KEY_PATH};  # Utilisation de la variable SSL_KEY_PATH
+
+        # Sécuriser les connexions SSL
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers HIGH:!aNULL:!MD5;
+
+        # Répertoire racine pour le site web
+        root /var/www/html;
+        index index.php index.html index.htm;
+
+        # Configuration pour gérer les fichiers
+        location / {
+            try_files $uri $uri/ /index.php?$args;  # Rechercher le fichier correspondant ou passer à index.php
+        }
+
+        # # Configuration pour les fichiers PHP
+        location ~ \.php$ {
+             include fastcgi_params;
+             fastcgi_index index.php;
+             fastcgi_pass wordpress:9000;  # Passer la requête à un conteneur PHP (assumé que wordpress:9000 est l'adresse du conteneur PHP)
+             fastcgi_param SCRIPT_FILENAME "$document_root$fastcgi_script_name";
+         }
+    }
+}
+
