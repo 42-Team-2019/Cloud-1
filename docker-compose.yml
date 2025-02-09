@@ -31,25 +31,20 @@ services:
       - "./srcs/sites/wp/:/wp/"
     restart: always
 
-  # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-  # #                     NGINX                           #
-  # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+  #                    NGINX                            #
+  # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   nginx:
-    depends_on:
-      - wordpress
-    networks:
-      - cloud1
+    image: nginx:latest
+    container_name: my-nginx
     restart: always
-    container_name: nginx
-    image: nginx
     ports:
       - "443:443"
     env_file:
-      - .env
-    environment:
-      DOMAIN_NAME: ${DOMAIN_NAME}
-      SSL_CERT_PATH: ${SSL_CERT_PATH}
-      SSL_KEY_PATH: ${SSL_KEY_PATH}
+      - ./.nginxEnv
+    volumes:
+      - ./src/proxy/nginx/conf:/etc/nginx/templates
+      - ./src/proxy/nginx/ssl:/etc/nginx/ssl
+    networks:
+      - cloud1
 
-volumes:
-  wordpress_data:
