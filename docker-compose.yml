@@ -1,42 +1,22 @@
-version: '3.8'
-
 networks:
   cloud1:
     driver: bridge
     name: cloud1
-
-services:
-  # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-  #                    WORDPRESS                        #
-  # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-  wordpress:
-    image: wordpress:php7.4-fpm
-    container_name: wordpress
-    environment:
-      WORDPRESS_DB_HOST: not_used   # Pas de connexion à une base de données pour le moment
-    volumes:
-      - wordpress_data:/var/www/html
-    networks:
-      - cloud1
-    restart: always
   # # # # # # # # # # # # # # # # # # # # # # # # # # # #
   #                    NGINX                            #
   # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+services:
   nginx:
-    build: ./src/proxy/nginx
-    container_name: nginx
+    image: nginx:latest
+    container_name: my-nginx
+    restart: always
     ports:
       - "443:443"
     env_file:
-      - .env
-    environment:
-      DOMAIN_NAME: ${DOMAIN_NAME}
-      SSL_CERT_PATH: ${SSL_CERT_PATH}
-      SSL_KEY_PATH: ${SSL_KEY_PATH}
+      - ./.nginxEnv
+    volumes:
+      - ./src/proxy/nginx/conf:/etc/nginx/templates
+      - ./src/proxy/nginx/ssl:/etc/nginx/ssl
     networks:
       - cloud1
-    depends_on:
-      - wordpress
 
-volumes:
-  wordpress_data:
